@@ -3,9 +3,9 @@ import requests
 from datetime import datetime, timedelta
 
 # Credenciais obtidas via variáveis de ambiente do GitHub Secrets
-API_KEY_SERPAPI = os.getenv("30e58ef2b0dc8b6cdaa7ad27d1e81aef333f68a9c79d395cc1470f07ade4d2fc")
-TELEGRAM_BOT_TOKEN = os.getenv("8839004626:AAGPkFuF3-BkKSCX5-qKtz1QfI1w93zyIOo")
-TELEGRAM_CHAT_ID = os.getenv("8453781624")
+API_KEY_SERPAPI = os.getenv("SERPAPI_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # 1. Os 4 destinos escolhidos (Cabo Verde, Canárias, Açores)
 DESTINOS = [
