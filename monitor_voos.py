@@ -2,12 +2,12 @@ import os
 import requests
 from datetime import datetime, timedelta
 
-# Credenciais obtidas via variáveis de ambiente do GitHub Secrets
+# Credenciais obtidas via GitHub Secrets
 API_KEY_SERPAPI = os.getenv("SERPAPI_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-# 1. Os 4 destinos escolhidos (Cabo Verde, Canárias, Açores)
+# Os 4 destinos escolhidos (Cabo Verde, Canárias, Açores)
 DESTINOS = [
     {"nome": "Boa Vista (Cabo Verde)", "codigo": "BVB"},
     {"nome": "Sal (Cabo Verde)", "codigo": "SID"},
@@ -16,16 +16,33 @@ DESTINOS = [
 ]
 
 ORIGEM = "OPO"  # Porto
-PRECO_TETO = 1000  # Alerta dispara se o valor de ida e volta for <= a 160 EUR
+PRECO_TETO = 1000  # Teto alto para teste
 
 # Janela de datas flexíveis (Final de novembro / Início de dezembro)
-DATA_INICIO_BUSCA = datetime(2026, 11, 30)
-DATA_FIM_BUSCA = datetime(2026, 12, 10)
-DURACAO_VIAGEM = 6  # Duração de estadia em dias
+DATA_INICIO_BUSCA = datetime(2026, 11, 25)
+DATA_FIM_BUSCA = datetime(2026, 12, 3)
+DURACAO_VIAGEM = 4  # Duração de estadia em dias
+
+def enviar_telegram(texto):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("Erro: Token ou Chat ID do Telegram em falta nas Secrets!")
+        return
+        
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": texto,
+        "parse_mode": "Markdown"
+    }
+    try:
+        res = requests.post(url, data=payload, timeout=10)
+        print(f"Status Telegram: {res.status_code} | Resposta: {res.text}")
+    except Exception as e:
+        print(f"Erro ao comunicar com o Telegram: {e}")
 
 def verificar_voos():
-    if not API_KEY_SERPAPI or not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("Erro: As chaves de acesso (Secrets) não estão configuradas corretamente.")
+    if not API_KEY_SERPAPI:
+        print("Erro: Chave da SerpApi em falta nas Secrets!")
         return
 
     for destino in DESTINOS:
@@ -41,7 +58,7 @@ def verificar_voos():
                    f"&currency=EUR&api_key={API_KEY_SERPAPI}")
             
             try:
-                response = requests.get(url).json()
+                response = requests.get(url, timeout=10).json()
                 best_flights = response.get("best_flights", [])
                 
                 if best_flights:
@@ -53,18 +70,12 @@ def verificar_voos():
                                f"📅 **Datas:** {data_ida} a {data_volta}")
                         enviar_telegram(msg)
             except Exception as e:
-                print(f"Erro ao consultar {destino['nome']}: {e}")
+                print(f"Erro ao consultar {destino['nome']} para {data_ida}: {e}")
             
             data_atual += timedelta(days=1)
 
-def enviar_telegram(texto):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": texto,
-        "parse_mode": "Markdown"
-    }
-    requests.post(url, data=payload)
-
 if __name__ == "__main__":
+    print("🤖 A iniciar o script de monitorização de voos...")
+    # Mensagem de teste forçada para garantir que o Telegram responde
+    enviar_telegram("🚀 **Teste direto:** O bot de voos do Porto foi acionado com sucesso!")
     verificar_voos()
