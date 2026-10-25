@@ -16,10 +16,10 @@ DESTINOS = [
 ]
 
 ORIGEM = "OPO"  # Porto
-PRECO_TETO = 1000  # Alerta dispara se o valor de ida e volta for <= a 160 EUR
+PRECO_TETO = 500  # Alerta dispara se o valor de ida e volta for <= a 160 EUR
 
 # Janela de datas flexíveis (Final de novembro / Início de dezembro)
-DATA_INICIO_BUSCA = datetime(2026, 11, 20)
+DATA_INICIO_BUSCA = datetime(2026, 11, 30)
 DATA_FIM_BUSCA = datetime(2026, 12, 10)
 DURACAO_VIAGEM = 6  # Duração de estadia em dias
 
@@ -41,7 +41,7 @@ def verificar_voos():
                    f"&currency=EUR&api_key={API_KEY_SERPAPI}")
             
             try:
-                response = requests.get(url).json()
+                response = requests.get(url, timeout=10).json()
                 best_flights = response.get("best_flights", [])
                 
                 if best_flights:
