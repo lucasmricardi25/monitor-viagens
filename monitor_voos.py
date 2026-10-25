@@ -16,7 +16,7 @@ DESTINOS = [
 ]
 
 ORIGEM = "OPO"  # Porto
-PRECO_TETO = 300  # Alerta dispara se o valor de ida e volta for <= a 160 EUR
+PRECO_TETO = 1000  # Alerta dispara se o valor de ida e volta for <= a 160 EUR
 
 # Janela de datas flexíveis (Final de novembro / Início de dezembro)
 DATA_INICIO_BUSCA = datetime(2026, 11, 20)
